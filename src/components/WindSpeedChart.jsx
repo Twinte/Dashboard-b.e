@@ -4,6 +4,7 @@ import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler, TimeScale } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { parseISO } from 'date-fns';
+import { API_URL } from '../utils/api';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler, TimeScale);
 
@@ -17,7 +18,7 @@ const WindSpeedChart = () => {
     const fetchWindData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('http://192.168.1.141:5000/weather');
+        const response = await axios.get(`${API_URL}/weather`);
         const data = response.data;
         if (data && data.hourly && data.hourly.time && data.hourly.windspeed_10m) {
           const labels = data.hourly.time.map(t => parseISO(t));
@@ -40,10 +41,11 @@ const WindSpeedChart = () => {
           });
         }
         setError(null);
-      } catch (err) { setError('Não foi possível carregar os dados de meteorologia.'); } 
+      } catch (_err) { setError('Não foi possível carregar os dados de meteorologia.'); } 
       finally { setLoading(false); }
     };
     fetchWindData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const chartOptions = {

@@ -8,6 +8,9 @@ import ConfigPage from './components/ConfigPage';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
+import ErrorBoundary from './components/ErrorBoundary';
+import { ConfigProvider, useConfig } from './context/ConfigContext';
+import { API_URL } from './utils/api';
 import './App.css';
 
 const AppContent = () => {
@@ -16,25 +19,28 @@ const AppContent = () => {
   const [error, setError] = useState(null);
   const [selectedChart, setSelectedChart] = useState('all');
   const [showSponsors, setShowSponsors] = useState(() => !sessionStorage.getItem('splashScreenShown'));
+  const { settings } = useConfig();
 
   const fetchData = useCallback(() => {
-    axios.get('http://192.168.1.141:5000/dados')
+    axios.get(`${API_URL}/dados`)
       .then(res => {
         if (res.data && Array.isArray(res.data)) {
           setHistory(res.data.slice(-100));
           if (error) setError(null);
         }
       })
-      .catch(err => { setError('Não foi possível ligar ao servidor.'); })
+      .catch(() => { setError('Não foi possível ligar ao servidor.'); })
       .finally(() => { if (loading) setLoading(false); });
-  }, [error, loading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (showSponsors) return;
     fetchData();
-    const intervalId = setInterval(fetchData, 5000);
+    const refreshMs = (settings.refreshRate || 5) * 1000;
+    const intervalId = setInterval(fetchData, refreshMs);
     return () => clearInterval(intervalId);
-  }, [showSponsors, fetchData]);
+  }, [showSponsors, fetchData, settings.refreshRate]);
 
   const latestData = history.length > 0 ? history[history.length - 1] : null;
   const handleSponsorsFinished = () => { sessionStorage.setItem('splashScreenShown', 'true'); setShowSponsors(false); };
@@ -49,11 +55,13 @@ const AppContent = () => {
       <Sidebar selectedChart={selectedChart} onSelectChart={setSelectedChart} />
       <main className="content">
         <div className="main-view-wrapper">
-          <Routes>
-            <Route path="/" element={<DashboardPage history={history} latestData={latestData} selectedChart={selectedChart} loading={loading && history.length === 0} error={error} />} />
-            <Route path="/historico" element={<HistoricalPage />} />
-            <Route path="/configuracao" element={<ConfigPage />} />
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<DashboardPage history={history} latestData={latestData} selectedChart={selectedChart} loading={loading && history.length === 0} error={error} />} />
+              <Route path="/historico" element={<HistoricalPage />} />
+              <Route path="/configuracao" element={<ConfigPage />} />
+            </Routes>
+          </ErrorBoundary>
         </div>
         <Footer />
       </main>
@@ -61,5 +69,11 @@ const AppContent = () => {
   );
 };
 
-const App = () => (<BrowserRouter><AppContent /></BrowserRouter>);
+const App = () => (
+  <BrowserRouter>
+    <ConfigProvider>
+      <AppContent />
+    </ConfigProvider>
+  </BrowserRouter>
+);
 export default App;

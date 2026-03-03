@@ -1,3 +1,8 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
 # Logs
 logs
 *.log
@@ -9,6 +14,7 @@ lerna-debug.log*
 
 node_modules
 dist
+dist_new
 dist-ssr
 *.local
 
@@ -25,3 +31,5 @@ dist-ssr
 *.zip
 *.b.zip
 Dash-e.b.zip
+
+PROJECT_IMPROVEMENTS.md

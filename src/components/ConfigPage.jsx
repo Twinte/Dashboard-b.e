@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useConfig } from '../context/ConfigContext';
 
-// Um componente reutilizável para o toggle switch, para um visual moderno
 const ToggleSwitch = ({ id, checked, onChange }) => {
   return (
     <label htmlFor={id} className="toggle-switch">
@@ -11,32 +11,20 @@ const ToggleSwitch = ({ id, checked, onChange }) => {
 };
 
 const ConfigPage = () => {
-  // Estados para gerir as configurações (valores de exemplo)
-  // No futuro, estes valores poderiam vir de um contexto global ou de uma API
-  const [settings, setSettings] = useState({
-    language: 'pt-br',
-    lowBatteryAlert: true,
-    lowBatteryThreshold: 20,
-    highMotorTempAlert: true,
-    highMotorTempThreshold: 90,
-    refreshRate: 5,
-  });
+  const { settings, updateSettings } = useConfig();
 
   const handleToggleChange = (key) => {
-    setSettings(prev => ({ ...prev, [key]: !prev[key] }));
+    updateSettings({ [key]: !settings[key] });
   };
 
   const handleValueChange = (key, value) => {
-    // Garante que o valor é tratado como número onde for apropriado
     const numericValue = !isNaN(parseFloat(value)) ? parseFloat(value) : value;
-    setSettings(prev => ({ ...prev, [key]: numericValue }));
+    updateSettings({ [key]: numericValue });
   };
 
-  // Função para salvar as configurações (atualmente apenas exibe um alerta)
   const saveSettings = () => {
     console.log("Configurações salvas:", settings);
-    // Em uma aplicação real, aqui você enviaria as configurações para o backend ou as salvaria no localStorage
-    alert('Configurações salvas (funcionalidade de exemplo)!');
+    alert('Configurações salvas!');
   };
 
   return (

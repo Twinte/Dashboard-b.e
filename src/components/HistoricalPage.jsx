@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
-// Importações necessárias para eixos de tempo
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler, TimeScale } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { parseISO, format, isValid, startOfDay, endOfDay } from 'date-fns';
 import axios from 'axios';
+import { API_URL } from '../utils/api';
 
-// Registo do TimeScale para que o Chart.js reconheça eixos de tempo
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler, TimeScale);
 
 // Componente da Tabela de Dados com Paginação
@@ -93,7 +92,7 @@ const HistoricalPage = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get('http://localhost:5000/dados/completo');
+        const res = await axios.get(`${API_URL}/dados/completo`);
         if (res.data && Array.isArray(res.data)) {
           setFullHistory(res.data);
           if (res.data.length > 0) {
@@ -113,6 +112,7 @@ const HistoricalPage = () => {
       }
     };
     fetchFullHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

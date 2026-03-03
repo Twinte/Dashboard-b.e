@@ -1,7 +1,7 @@
 import React from 'react';
 import ChartComponent from './ChartComponent';
 
-const WavesChart = ({ currentValue, historyData, loading }) => {
+const CurrentChart = ({ currentValue, historyData, loading }) => {
   const chartOptions = {
     title: `Corrente: ${(!loading && currentValue != null) ? currentValue.toFixed(2) + ' A' : '---'}`,
     label: 'Corrente (A)',
@@ -9,4 +9,4 @@ const WavesChart = ({ currentValue, historyData, loading }) => {
   };
   return <ChartComponent data={historyData} options={chartOptions} loading={loading} />;
 };
-export default WavesChart;
+export default CurrentChart;

@@ -46,6 +46,7 @@ const MiniMap = ({ id, position, zoom, routePoints, info }) => {
       map.remove();  // Limpeza do mapa quando o componente for desmontado
       mapRef.current = null;  // Resetando a referência
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [position, zoom, routePoints]);  // O mapa será reconstruído apenas se a posição, zoom ou rota mudar
 
   return (
